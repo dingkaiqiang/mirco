@@ -33,9 +33,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         return new MyRedisTokenStore(connectionFactory);
     }
 
-    /*
-    * AuthorizationServerEndpointsConfigurer：用来配置授权（authorization）以及令牌（token）的访问端点和令牌服务(token services)。
-    * */
+
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
@@ -45,9 +43,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 allowedTokenEndpointRequestMethods(HttpMethod.GET,HttpMethod.POST);
     }
 
-    /*
-    * AuthorizationServerSecurityConfigurer 用来配置令牌端点(Token Endpoint)的安全约束
-    * */
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         // 允许表单认证
@@ -56,8 +51,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     }
 
     /*
-
-        ClientDetailsServiceConfigurer：用来配置客户端详情服务（ClientDetailsService），客户端详情信息在这里进行初始化，你能够把客户端详情信息写死在这里或者是通过数据库来存储调取详情信息
     *   1.授权码模式（authorization code）
         2.简化模式（implicit）
         3.密码模式（resource owner password credentials）
@@ -67,10 +60,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         String finalSecret = "{bcrypt}" + new BCryptPasswordEncoder().encode("123456");
 
-        clients.
-//                jdbc(dataSource).
-                inMemory().
-                withClient("micro-web")
+        clients.inMemory()
+                .withClient("micro-web")
                 .resourceIds("micro-web")
                 .authorizedGrantTypes("client_credentials", "refresh_token")
                 .scopes("all","read", "write","aa")
@@ -79,11 +70,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .accessTokenValiditySeconds(1200)
                 .refreshTokenValiditySeconds(50000)
                 .and()
-                .withClient("micro-zuul")
-                .resourceIds("micro-zuul")
+                .withClient("client_2")
+                .resourceIds("client_2")
                 .authorizedGrantTypes("password", "refresh_token")
                 .scopes("server")
-                .authorities("password")
+                .authorities("oauth2")
                 .secret(finalSecret)
                 .accessTokenValiditySeconds(1200)
                 .refreshTokenValiditySeconds(50000);
